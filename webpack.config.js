@@ -2,31 +2,44 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
-  entry: "./src/index.ts",
+  entry: "./src/index.tsx",
   output: {
     path: path.join(__dirname, "/dist"),
     filename: "index-bundle.js"
   },
+  resolve: {
+    extensions: [".ts", ".tsx", ".js", ".json"],
+  },
   module: {
     rules: [
       {
-        test: /\.tsx?$/,
-        exclude: /node_modules/,
-        use: ["babel-loader"]
+        test: /\.(ts|js)x?$/,
+        use: [
+          {
+            loader: "babel-loader",
+            options: {
+              plugins: ["@babel/plugin-transform-typescript"],
+            },
+          },
+        ],
+        include: [path.resolve(__dirname, "src")]
       },
       {
         test: /\.less$/,
         use: [
+          "classnames-loader",
+          "style-loader",
           {
-            loader: 'style-loader', // creates style nodes from JS strings
+            loader: "css-loader",
+            options: {
+              modules: {
+                localIdentName: "[name]-[local]-[hash:base64:3]"
+              }
+            }
           },
-          {
-            loader: 'css-loader', // translates CSS into CommonJS
-          },
-          {
-            loader: 'less-loader', // compiles Less to CSS
-          },
+          "less-loader"
         ],
+        include: [path.resolve(__dirname, "src")]
       },
       {
         test: /\.css$/,
